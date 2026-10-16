@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded",() =>{
 
         //Estrutura do carrossel
         const slides = document.querySelectorAll(".carousel-slide");
-        const dot = document.querySelectorAll(".dot");
+        const dots = document.querySelectorAll(".dot");
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
         let slideAtual = 0;
@@ -25,13 +25,13 @@ document.addEventListener("DOMContentLoaded",() =>{
         {
             slides.forEach((slide) => 
             slide.classList.remove("active"));
-            dot.forEach((dots) => dots.classList.remove("active"));
+            dots.forEach((dot) => dot.classList.remove("active"));
 
             slideAtual = (index + slides.length) 
                 % slides.length;
             
             slides[slideAtual].classList.add("active");
-            dot[slideAtual].classList.add("active");
+            dots[slideAtual].classList.add("active");
         }
 
         function nextSlide(){
@@ -62,6 +62,74 @@ document.addEventListener("DOMContentLoaded",() =>{
             startSlide();
         });
 
+        dots.forEach((dot) =>{
+            dot.addEventListener("click", (e) => {
+                const index = parseInt(e.target.getAttribute("data-index"));
+                showSlide(index);
+                stopSlide();
+                startSlide();
+            });
+        });
+        
         startSlide();
 
-    });//Final função evento carregar todo HTML
+        //Validação do formulário
+        const contatoForm = document.getElementById("contatoForm");
+        const nome = document.getElementById("nome");
+        const email = document.getElementById("email");
+        const mensagem = document.getElementById("mensagem");
+
+        function isValidEmail(email){
+            const emailRegex =
+              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        contatoForm.addEventListener("submit", (event) =>{
+            event.preventDefault();
+
+            let isValid = true;
+
+            //Validação do campo nome (verificar mínimo 3 caracteres)
+            if(nome.value.trim().length < 3)
+            {
+                showError(nome,"O nome deve ter no mínimo 3 caracteres");
+                isValid = false;
+            }
+
+            //Validação do campo E-mail
+            if(!isValidEmail(email.value.trim()))
+            {
+                showError(email,"Insira um e-mail válido");
+                isValid = false;
+            }
+
+            //Validação do campo mensagem (mínimo 10 caracteres)
+            if(mensagem.value.trim().length < 10)
+            {
+                showError(mensagem,"A mensagem deve conter no mínimo 10 caracteres");
+                isValid = false;
+            }
+
+            //Validar se estiver tudo correto
+            if(isValid)
+            {
+                clearError();
+                alert("Mensagem enviado com sucesso");
+                contatoForm.reset();
+            }
+        });
+
+        function showError(inputElement, menssagem){
+            const formGroup = inputElement.parentElement;
+
+            inputElement.classList.add("input-error");
+
+            const errorMensagem = document.createElement("small");
+            errorMensagem.className = "error-text";
+            errorMensagem.innerText = menssagem;
+            formGroup.appendChild(errorMensagem);
+        }
+
+
+});//Final função evento carregar todo HTML
