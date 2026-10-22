@@ -79,14 +79,11 @@ document.addEventListener("DOMContentLoaded",() =>{
         const email = document.getElementById("email");
         const mensagem = document.getElementById("mensagem");
 
-        function isValidEmail(email){
-            const emailRegex =
-              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(email);
-        }
-
         contatoForm.addEventListener("submit", (event) =>{
             event.preventDefault();
+
+            //Limpar os erros a partir da segunda submissão
+            clearError();
 
             let isValid = true;
 
@@ -115,20 +112,70 @@ document.addEventListener("DOMContentLoaded",() =>{
             if(isValid)
             {
                 clearError();
-                alert("Mensagem enviado com sucesso");
+                showToast("Mensagem enviado com sucesso");
                 contatoForm.reset();
             }
         });
 
-        function showError(inputElement, menssagem){
+        function showToast(mensagemCadastro){
+            const toast = document.
+            getElementById("toast");
+            const toastMensagem = document.
+            getElementById("toastMensagem");
+
+            toastMensagem.textContent = mensagemCadastro;
+
+            toast.classList.add("show");
+
+            setTimeout(() =>{
+                toast.classList.remove("show");
+            }, 10000);
+        }
+
+        function isValidEmail(email) {
+            const emailRegex =
+              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+       //Remover a borda vermelha nos inputs
+       [nome, email, mensagem].forEach((input) =>{
+        input.addEventListener("input", () =>{
+            clearFieldError(input);
+        });
+       });
+
+        function showError(inputElement, mensagem){
             const formGroup = inputElement.parentElement;
+            clearFieldError(inputElement);
 
             inputElement.classList.add("input-error");
 
             const errorMensagem = document.createElement("small");
             errorMensagem.className = "error-text";
-            errorMensagem.innerText = menssagem;
+            errorMensagem.innerText = mensagem;
             formGroup.appendChild(errorMensagem);
+        }
+
+        //Remover Erro do campo de forma individual
+        function clearFieldError(inputElement){
+            const formGroup = inputElement.parentElement;
+
+            inputElement.classList.remove("input-error");
+            const removerErro = formGroup.querySelector(".error-text");
+            if(removerErro){
+                removerErro.remove();
+            }
+        }
+
+        //Remover o erro de todos os campos
+        function clearError(){
+            document.querySelectorAll(".error-text")
+            .forEach((el) => el.remove());
+
+            document.querySelectorAll(".input-error")
+            .forEach((el) => 
+                el.classList.remove("input-error"));
         }
 
 
